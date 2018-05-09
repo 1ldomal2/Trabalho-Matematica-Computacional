@@ -9,7 +9,8 @@
 //###########################################
 
 //Ponteiro para função que tem como argumento um numero flutuante
-//float (*F)(float);
+float (*F)(float);
+F=Horner;
 
 float Funcao(float Min,float Max,int NumeroTrapezios){
 
