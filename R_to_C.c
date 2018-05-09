@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include "R_to_C.h"
 
 //Resolve uma função Polinomial de maneira mais eficiente
 //Recebe Um vetor com os coeficiente o tamanho do vetor e o valor de X
@@ -23,11 +24,11 @@ float Horner(float Coeficiente[],int Tamanho,float DominioX){
 
 
 
-void Gauls(float **MatrizA,float VetorB[],int Tamanho){
-
+void Gauls(int Tamanho,float MatrizA[][Tamanho],float VetorB[]){
 	//Cria Dois vetores para trocar matriz                                                     
 	float VetorSwapA[Tamanho];
 	float VetorSwapB[Tamanho];
+	
 
 	//Inicializa os Vetores do Swap
 	for (int i = 0; i < Tamanho; ++i)
@@ -37,10 +38,10 @@ void Gauls(float **MatrizA,float VetorB[],int Tamanho){
 	}
 
 	//Vai da primeira até a penultima linha zerando-as
-	for (int Pivo = 0; Pivo < Tamanho-1; ++Pivo)
+	for (int Pivo = 0; Pivo < (Tamanho-1); ++Pivo)
 	{
 		int IndiceMaior = Pivo;
-		float Maior =MatrizA[Pivo][Pivo];
+		float Maior = MatrizA[Pivo][Pivo];
 
 		//Faz as trocas da linha Pivo
 		for (int SwapIndice = Pivo; SwapIndice < Tamanho; ++SwapIndice)
@@ -74,19 +75,23 @@ void Gauls(float **MatrizA,float VetorB[],int Tamanho){
 		for (int LinhaTrabalha = (Pivo+1); LinhaTrabalha < Tamanho; ++LinhaTrabalha)
 		{
 			Escalar=MatrizA[LinhaTrabalha][Pivo]/MatrizA[Pivo][Pivo];
-
+	printf("\nEscalar %f\n",Escalar);
+	printf("U %f\n",MatrizA[LinhaTrabalha][Pivo]);
+	printf("L %f\n",MatrizA[Pivo][Pivo]);
+	printf("\n");
 			for (int Coluna = 0; Coluna < Tamanho; ++Coluna)
 			{
 				MatrizA[LinhaTrabalha][Coluna]=MatrizA[LinhaTrabalha][Coluna]-(Escalar*MatrizA[Pivo][Coluna]);
 			}
 			VetorB[LinhaTrabalha]=VetorB[LinhaTrabalha]-(Escalar*VetorB[Pivo]);
 		}
+		printf("\n");
 	}
 
 	return;
 }
 
-void SubsRetro(float **MatrizA,float VetorB[],float VetorX[],int Tamanho){
+void SubsRetro(int Tamanho,float MatrizA[][Tamanho],float VetorB[],float VetorX[]){
 	float Somatorio = 0;
 	//Zera matriz para evitar erros
 	for(int i = 0;i < Tamanho;i++)
@@ -105,22 +110,7 @@ void SubsRetro(float **MatrizA,float VetorB[],float VetorX[],int Tamanho){
 		VetorX[i] = (VetorB[i] - Somatorio) / MatrizA[i][i];
 	}
 }
-int main(int argc, char const *argv[])
-{
-	float MatrizA[3][3] = {4,4,4,3,1,2,6,3};
-	float VetorB[3] = {59,97,66};
-	float VetorX[3];
-	Gauls(MatrizA,VetorB,3);
-	SubsRetro(MatrizA,VetorB,VetorX,3);
-	for(int i = 0;i < 3;i++)
-	{
-		printf("%f",VetorX[i]);	
-	}
 
-	
-	return 0;
-
-}
 
 
 

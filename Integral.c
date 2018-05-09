@@ -11,6 +11,7 @@
 //Ponteiro para função que tem como argumento um numero flutuante
 //float (*F)(float);
 //F=Horner;
+#include "Integral.h"
 
 float Funcao(float Min,float Max,int NumeroTrapezios){
 
