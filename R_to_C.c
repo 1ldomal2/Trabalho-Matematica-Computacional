@@ -23,7 +23,7 @@ float Horner(float Coeficiente[],int Tamanho,float DominioX){
 
 
 
-void Gauls(float **MatrizA,float Vetor[],int Tamanho){
+void Gauls(float **MatrizA,float VetorB[],int Tamanho){
 
 	//Cria Dois vetores para trocar matriz                                                     
 	float VetorSwapA[Tamanho];
@@ -63,9 +63,9 @@ void Gauls(float **MatrizA,float Vetor[],int Tamanho){
 			MatrizA[IndiceMaior][i]=VetorSwapA[i];
 
 			//Swap B
-			VetorSwapB[i]=Vetor[Pivo];
-			Vetor[Pivo]=Vetor[IndiceMaior];
-			Vetor[IndiceMaior]=VetorSwapB[i];
+			VetorSwapB[i]=VetorB[Pivo];
+			VetorB[Pivo]=VetorB[IndiceMaior];
+			VetorB[IndiceMaior]=VetorSwapB[i];
 		}
 		
 
@@ -79,20 +79,47 @@ void Gauls(float **MatrizA,float Vetor[],int Tamanho){
 			{
 				MatrizA[LinhaTrabalha][Coluna]=MatrizA[LinhaTrabalha][Coluna]-(Escalar*MatrizA[Pivo][Coluna]);
 			}
-			Vetor[LinhaTrabalha]=Vetor[LinhaTrabalha]-(Escalar*Vetor[Pivo]);
+			VetorB[LinhaTrabalha]=VetorB[LinhaTrabalha]-(Escalar*VetorB[Pivo]);
 		}
 	}
 
 	return;
 }
 
-void SubsRetro(float **MatrizA,float Vetor[]){
+void SubsRetro(float **MatrizA,float VetorB[],float VetorX[],int Tamanho){
+	float Somatorio = 0;
+	//Zera matriz para evitar erros
+	for(int i = 0;i < Tamanho;i++)
+	{
+		VetorX[i] = 0;	
+	}
+	VetorX[Tamanho] = VetorB[Tamanho] / MatrizA[Tamanho][Tamanho];
 
+	for(int i = (Tamanho -1);i < 0;i--)
+	{
+		Somatorio = 0;
+		for(int j = (i + 1);j < Tamanho;j++)
+		{
+			Somatorio = Somatorio + MatrizA[i][j] * VetorX[j];
+		}
+		VetorX[i] = (VetorB[i] - Somatorio) / MatrizA[i][i];
+	}
 }
 int main(int argc, char const *argv[])
 {
-	/* code */
+	float MatrizA[3][3] = {4,4,4,3,1,2,6,3};
+	float VetorB[3] = {59,97,66};
+	float VetorX[3];
+	Gauls(MatrizA,VetorB,3);
+	SubsRetro(MatrizA,VetorB,VetorX,3);
+	for(int i = 0;i < 3;i++)
+	{
+		printf("%f",VetorX[i]);	
+	}
+
+	
 	return 0;
+
 }
 
 

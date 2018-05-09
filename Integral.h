@@ -1,0 +1,1 @@
+float Funcao(float Min,float Max,int NumeroTrapezios);

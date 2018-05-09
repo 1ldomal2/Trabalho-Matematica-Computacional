@@ -9,8 +9,8 @@
 //###########################################
 
 //Ponteiro para função que tem como argumento um numero flutuante
-float (*F)(float);
-F=Horner;
+//float (*F)(float);
+//F=Horner;
 
 float Funcao(float Min,float Max,int NumeroTrapezios){
 
@@ -24,15 +24,10 @@ float Funcao(float Min,float Max,int NumeroTrapezios){
 	float AreaTotal=0;
 	for (int i = 1; i <=NumeroTrapezios; ++i)
 	{
-		Area=(float) ( ( F(Ponto1) + F(Ponto2) ) * Altura) / 2      // (B+b)*H/2
-		Ponto1+=Range;
-		Ponto2+=Range;
-		AreaTotal+=Area
+		//Area=(float) ( ( F(Ponto1) + F(Ponto2) ) * Altura) / 2      // (B+b)*H/2
+		//Ponto1+=Range;
+		//Ponto2+=Range;
+		//AreaTotal+=Area
 	}
 	return AreaTotal;
-}
-
-
-
-
 }
