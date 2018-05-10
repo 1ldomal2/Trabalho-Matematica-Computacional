@@ -1,5 +1,5 @@
 main:	Main.o	R_to_C.o	Integral.o
-	gcc Main.o R_to_C.o Integral.o -o exe
+	gcc Main.o R_to_C.o Integral.o -o exe;./exe
 	rm *.o 
 
 main.o:	Main.c
