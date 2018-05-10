@@ -112,14 +112,17 @@ void Gauls(int Tamanho,float MatrizA[][Tamanho],float VetorB[]){
 
 void SubsRetro(int Tamanho,float MatrizA[][Tamanho],float VetorB[],float VetorX[]){
 	float Somatorio = 0;
+
 	//Zera matriz para evitar erros
 	for(int i = 0;i < Tamanho;i++)
 	{
 		VetorX[i] = 0;	
 	}
-	VetorX[Tamanho] = VetorB[Tamanho] / MatrizA[Tamanho][Tamanho];
+	//Acha o primeiro x que é atípico
+	VetorX[Tamanho-1] = VetorB[Tamanho-1] / MatrizA[Tamanho-1][Tamanho-1];
 
-	for(int i = (Tamanho -1);i < 0;i--)
+	//Acha os demais X
+	for(int i = (Tamanho-1);i >= 0;i--)
 	{
 		Somatorio = 0;
 		for(int j = (i + 1);j < Tamanho;j++)

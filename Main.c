@@ -15,21 +15,25 @@
 
 int main(int argc, char const *argv[])
 {
-	float MatrizA[3][3] = {4,1,2,4,3,6,4,1,3};
+	float MatrizA[3][3] = {1,2,1,4,2,1,2,0,2};
 	
-	float VetorB[3] = {59,97,66};
+	float VetorB[3] = {56,131,64};
 	float VetorX[3];
 	Gauls(3,MatrizA,VetorB);
-	//SubsRetro(3,&VetorB,VetorX,MatrizA);
-	for(int i = 0;i < 3;i++)
+/*	for(int i = 0;i < 3;i++)
 	{
 		for(int j = 0;j < 3;j++)
 		{
 			printf("%f\t",MatrizA[i][j]);	
 		}
 		printf("\n");
+	}*/
+	
+	SubsRetro(3,MatrizA,VetorB,VetorX);
+	for(int i = 0;i < 3;i++)
+	{
+		printf("%f\t",VetorX[i]);	
 	}
-	Gauls(3,MatrizA,VetorB);
 	printf("\n");
 
 	
