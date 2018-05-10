@@ -54,8 +54,10 @@ int Interpolacao(char Url[],ARQUIVO *File){
 
 	//Le o Arquivo
 	while(!feof(Arquivo)){
-
 		fscanf(Arquivo,"%c",&Buff);
+		if(feof(Arquivo)){//Caso chegue no fim do arquivo sai do LOOP
+			break;
+		}
 		
 		//Verifica se a linha é um comentario
 		if(Buff == '#'){
@@ -64,7 +66,6 @@ int Interpolacao(char Url[],ARQUIVO *File){
 			getc(Arquivo);
 			continue;
 		}
-	printf("%c\n",Buff);
 
 		switch (Buff){
 			case 'n':
@@ -77,43 +78,36 @@ int Interpolacao(char Url[],ARQUIVO *File){
 				for(int i = 1;i <= File->n;i++)
 				{
 					fscanf(Arquivo,"%f",&valor);
-					getc(Arquivo);
-					printf("%f\t",valor); 	
+					getc(Arquivo);//Pula
 					File->x=(float*)realloc(File->x,i * sizeof(float));
-					File->x[i] = valor;
+					File->x[i-1] = valor;
 				}
-				fscanf(Arquivo,"%c",&Buff);//Pula o \n
 				break;
 			case 'y':
 				fscanf(Arquivo,"%c",&Buff);//Pula o espaço
 				for(int i = 1;i <= File->n;i++)
 				{
 					fscanf(Arquivo,"%f",&valor);
-					getc(Arquivo); 	
-					printf("%f\t",valor); 
+					getc(Arquivo);	
 					File->y=(float*)realloc(File->y,i * sizeof(float));
-					File->y[i] = valor;
+					File->y[i-1] = valor;
 				}
-				fscanf(Arquivo,"%c",&Buff);//Pula o \n
 				break;
 			case 'a':
 				fscanf(Arquivo,"%c",&Buff);//Pula o espaço
 				fscanf(Arquivo,"%f",&valor);
-				getc(Arquivo); 	
 				File->a = valor;
 				fscanf(Arquivo,"%c",&Buff);//Pula o \n
 				break;
 			case 'b':
 				fscanf(Arquivo,"%c",&Buff);//Pula o espaço
 				fscanf(Arquivo,"%f",&valor);
-				getc(Arquivo); 	
 				File->b = valor;
 				fscanf(Arquivo,"%c",&Buff);//Pula o \n
 				break;
 			case 'i':
 				fscanf(Arquivo,"%c",&Buff);//Pula o espaço
 				fscanf(Arquivo,"%f",&valor);
-				getc(Arquivo); 	
 				File->i = valor;
 				fscanf(Arquivo,"%c",&Buff);//Pula o \n
 				break;
@@ -124,9 +118,8 @@ int Interpolacao(char Url[],ARQUIVO *File){
 					fscanf(Arquivo,"%f",&valor);
 					getc(Arquivo); 	
 					File->p=(float*)realloc(File->p,i * sizeof(float));
-					File->p[i] = valor;
+					File->p[i-1] = valor;
 				}
-				fscanf(Arquivo,"%c",&Buff);//Pula o \n
 				break;
 			case 't':
 				fscanf(Arquivo,"%c",&Buff);//Pula o espaço
@@ -140,7 +133,7 @@ int Interpolacao(char Url[],ARQUIVO *File){
 			case ' ':
 				break;
 			default:
-			printf("%c",Buff);
+				printf("\n LEU ISSO AQUI = %c\n",Buff);
 				printf("Erro ao ler");
 				return -2;
 				break;

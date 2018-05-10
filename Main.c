@@ -23,14 +23,13 @@ int main(int argc, char const *argv[])
 
 	SubsRetro(3,MatrizA,VetorB,VetorX);
 
-	Interpolacao("arquivo",&File);
+	Interpolacao("Input",&File);
 
-	//for(int i = 0;i < File.n;i++)
-	//{
-
-	//	printf("%f",File.x[i]);
+	for(int i = 0;i < File.n;i++)
+	{
+		printf("%f\t",File.x[i]);
 		
-	//}
+	}
 	
 	return 0;
 }
