@@ -15,9 +15,9 @@
 
 int main(int argc, char const *argv[])
 {
-	float MatrizA[3][3] = {1,2,1,4,2,1,2,0,2};
+	float MatrizA[3][3] = {4,1,2,4,3,6,4,1,3};
 	
-	float VetorB[3] = {56,131,64};
+	float VetorB[3] = {59,97,66};
 	float VetorX[3];
 	Gauls(3,MatrizA,VetorB);
 	//SubsRetro(3,&VetorB,VetorX,MatrizA);

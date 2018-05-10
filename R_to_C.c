@@ -69,16 +69,35 @@ void Gauls(int Tamanho,float MatrizA[][Tamanho],float VetorB[]){
 			VetorB[IndiceMaior]=VetorSwapB[i];
 		}
 		
+		for (int i = 0; i < Tamanho; ++i)
+		{
+			for (int j = 0; j < Tamanho; ++j)
+			{
+				printf("%.2f|",MatrizA[i][j]);
+				
+			}
+			printf("\n");
+		}
+			printf("\n");
+			
 
 		//Acha o Escalar que ira zerar as linhas
 		float Escalar=1;
 		for (int LinhaTrabalha = (Pivo+1); LinhaTrabalha < Tamanho; ++LinhaTrabalha)
 		{
 			Escalar=MatrizA[LinhaTrabalha][Pivo]/MatrizA[Pivo][Pivo];
-	printf("\nEscalar %f\n",Escalar);
-	printf("U %f\n",MatrizA[LinhaTrabalha][Pivo]);
-	printf("L %f\n",MatrizA[Pivo][Pivo]);
-	printf("\n");
+		
+			//Resolução Começa a Zerar
+			for (int i = 0; i < Tamanho; ++i)
+			{
+				for (int j = 0; j < Tamanho; ++j)
+				{
+					printf("%.2f|",MatrizA[i][j]);
+					
+				}
+				printf("\n");
+			}
+
 			for (int Coluna = 0; Coluna < Tamanho; ++Coluna)
 			{
 				MatrizA[LinhaTrabalha][Coluna]=MatrizA[LinhaTrabalha][Coluna]-(Escalar*MatrizA[Pivo][Coluna]);
