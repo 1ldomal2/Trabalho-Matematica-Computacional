@@ -10,6 +10,15 @@ typedef struct arquivo{
 	float *p;
 	float t;
 }ARQUIVO;
-float Funcao(float Min,float Max,int NumeroTrapezios);
+typedef struct Matrizes{
+	float **MatrizA;
+	float *VetorB;
+	float *VetorX;
+}MATRIZ;
+typedef int bool;
+float Funcao(float Min,float Max,int NumeroTrapezios,ARQUIVO *Lidos);
 int Interpolacao(char Url[],ARQUIVO *File);
+void Seta_Valores_Structs_Verifica_0(ARQUIVO *Verifica);
+bool Verifica_Arquivo_Valido(ARQUIVO Verifica);
+void Prepara_Matriz(ARQUIVO *Lida,MATRIZ *matriz);
 #endif 

@@ -11,6 +11,3 @@ R_to_C.o:	R_to_C.c	R_to_C.h
 
 Integral.o:	Integral.c	Integral.h
 	gcc -c Integral.c
-
-	
-	

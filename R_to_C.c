@@ -10,6 +10,11 @@
 #include <math.h>
 #include "R_to_C.h"
 
+/*
+Ver se é necessario inverter o VETOR B
+Estavamos criando uma struct com os valores do arquivo Lido  para resolver com  o GAUSS e
+depois interpolar, perguntar ao Diego Bebe se o numero de colunas é o atributo I do input
+*/
 //Resolve uma função Polinomial de maneira mais eficiente
 //Recebe Um vetor com os coeficiente o tamanho do vetor e o valor de X
 //Retorna f(x) ou seja a imagem no ponto X
@@ -21,8 +26,6 @@ float Horner(float Coeficiente[],int Tamanho,float DominioX){
 	}
 	return ImagemY;
 }
-
-
 
 void Gauls(int Tamanho,float MatrizA[][Tamanho],float VetorB[]){
 	//Cria Dois vetores para trocar matriz                                                     
