@@ -1,5 +1,5 @@
 main:	Main.o	R_to_C.o	Integral.o
-	clear
+	#clear
 	gcc Main.o R_to_C.o Integral.o -o exe
 	rm *.o 
 	./exe

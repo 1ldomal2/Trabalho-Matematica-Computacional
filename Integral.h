@@ -3,7 +3,7 @@
 typedef struct arquivo{
 	float *x;
 	float *y;
-	float n;
+	int n;
 	float a;
 	float b;
 	float i;

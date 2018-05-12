@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include "R_to_C.h"
+#define DEBUG printf("\nLinha = %d Arquivo = %s\n",__LINE__,__FILE__);
 
 /*
 Ver se é necessario inverter o VETOR B
@@ -20,14 +21,13 @@ depois interpolar, perguntar ao Diego Bebe se o numero de colunas é o atributo 
 //Retorna f(x) ou seja a imagem no ponto X
 float Horner(float Coeficiente[],int Tamanho,float DominioX){
 	float ImagemY=Coeficiente[0];
-	for (int i = 1; i < Tamanho; ++i)
-	{
+		for (int i = 1; i < Tamanho; ++i){
 		ImagemY=ImagemY*DominioX+Coeficiente[i];
 	}
 	return ImagemY;
 }
 
-void Gauls(int Tamanho,float MatrizA[][Tamanho],float VetorB[]){
+void Gauls(int Tamanho,float **MatrizA,float VetorB[]){
 	//Cria Dois vetores para trocar matriz                                                     
 	float VetorSwapA[Tamanho];
 	float VetorSwapB[Tamanho];
@@ -36,8 +36,8 @@ void Gauls(int Tamanho,float MatrizA[][Tamanho],float VetorB[]){
 	//Inicializa os Vetores do Swap
 	for (int i = 0; i < Tamanho; ++i)
 	{
-		VetorSwapA[i]=0;
-		VetorSwapB[i]=0;
+		 VetorSwapA[i]=0;
+		 VetorSwapB[i]=0;
 	}
 
 	//Vai da primeira até a penultima linha zerando-as
@@ -52,8 +52,8 @@ void Gauls(int Tamanho,float MatrizA[][Tamanho],float VetorB[]){
 			if(SwapIndice != Pivo){
 				if (fabs(Maior)<fabs(MatrizA[SwapIndice][Pivo]))
 				{
-					IndiceMaior = SwapIndice;
-					Maior = MatrizA[SwapIndice][Pivo];
+					 IndiceMaior = SwapIndice;
+					 Maior = MatrizA[SwapIndice][Pivo];
 				}
 			}
 		}
@@ -62,28 +62,28 @@ void Gauls(int Tamanho,float MatrizA[][Tamanho],float VetorB[]){
 		for (int i = 0; i < Tamanho; ++i)
 		{
 			//Swap A
-			VetorSwapA[i]=MatrizA[Pivo][i];
-			MatrizA[Pivo][i]=MatrizA[IndiceMaior][i];
-			MatrizA[IndiceMaior][i]=VetorSwapA[i];
-
-			//Swap B
-			VetorSwapB[i]=VetorB[Pivo];
-			VetorB[Pivo]=VetorB[IndiceMaior];
-			VetorB[IndiceMaior]=VetorSwapB[i];
+			 VetorSwapA[i]=MatrizA[Pivo][i];
+			 MatrizA[Pivo][i]=MatrizA[IndiceMaior][i];
+			 MatrizA[IndiceMaior][i]=VetorSwapA[i];
+ 
+			 //Swap B
+			 VetorSwapB[i]=VetorB[Pivo];
+			 VetorB[Pivo]=VetorB[IndiceMaior];
+			 VetorB[IndiceMaior]=VetorSwapB[i];
 		}
 
 		//Acha o Escalar que ira zerar as linhas
 		float Escalar=1;
 		for (int LinhaTrabalha = (Pivo+1); LinhaTrabalha < Tamanho; ++LinhaTrabalha)
 		{
-			Escalar=MatrizA[LinhaTrabalha][Pivo]/MatrizA[Pivo][Pivo];
+			 Escalar=MatrizA[LinhaTrabalha][Pivo]/MatrizA[Pivo][Pivo];
 		
 			//Resolução Começa a Zerar
 			for (int Coluna = 0; Coluna < Tamanho; ++Coluna)
 			{
-				MatrizA[LinhaTrabalha][Coluna]=MatrizA[LinhaTrabalha][Coluna]-(Escalar*MatrizA[Pivo][Coluna]);
+				 MatrizA[LinhaTrabalha][Coluna]=MatrizA[LinhaTrabalha][Coluna]-(Escalar*MatrizA[Pivo][Coluna]);
 			}
-			VetorB[LinhaTrabalha]=VetorB[LinhaTrabalha]-(Escalar*VetorB[Pivo]);
+			 VetorB[LinhaTrabalha]=VetorB[LinhaTrabalha]-(Escalar*VetorB[Pivo]);
 		}
 	}
 
@@ -100,7 +100,7 @@ void SubsRetro(int Tamanho,float MatrizA[][Tamanho],float VetorB[],float VetorX[
 	}
 	//Acha o primeiro x que é atípico
 	VetorX[Tamanho-1] = VetorB[Tamanho-1] / MatrizA[Tamanho-1][Tamanho-1];
-
+	
 	//Acha os demais X
 	for(int i = (Tamanho-1);i >= 0;i--)
 	{

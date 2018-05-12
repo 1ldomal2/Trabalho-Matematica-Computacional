@@ -11,18 +11,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include "Integral.h"
 #include "R_to_C.h"
-#define DEBUG printf("\nLinha = %d\n",__LINE__);
-
+#define DEBUG printf("\nLinha = %d Arquivo = %s\n",__LINE__,__FILE__);
+#define true 1
+#define false 0
 
 //Ponteiro para função que tem como argumento um numero flutuante
 //float (*F)(float);
 //F=Horner();
-enum Boolean{false=0,true};
 
 float Funcao(float Min,float Max,int NumeroTrapezios,ARQUIVO *Lido){
-
 	//Descobre o Tamanho da altura ( que é o mesmo tamanho para todos)
 	float Range=Max-Min;
 	float Altura=(float)Range/NumeroTrapezios;
@@ -48,6 +48,7 @@ void Prepara_Matriz(ARQUIVO *Lida,MATRIZ *matriz){
 	for(int i = 0;i < Lida->n;i++){
 		matriz->MatrizA[i] = (float*)malloc(Lida->n * sizeof(float));
 	}
+	//preenche a MatrizA
 	for(int i = 0;i < Lida->n;i++){//linha
 		for(int j = 0;j < Lida->n;j++){//coluna
 			if(j == 0){
@@ -61,12 +62,14 @@ void Prepara_Matriz(ARQUIVO *Lida,MATRIZ *matriz){
 			}
 		}
 	}
-	printf("\nPRINTA\n");
-	for(int i = 0;i < Lida->n;i++){//linha
-		for(int j = 0;j < Lida->n;j++){//coluna
-			printf("%f\t",matriz->MatrizA[i][j]);
-		}
-		printf("\n");
+	// Preenche Vetor B
+	matriz->VetorB = (float*)malloc(Lida->n * sizeof(float));
+	for(int j = 0;j < Lida->n;j++){//coluna
+		matriz->VetorB[j] = Lida->y[j];
+	}
+	matriz->VetorX = (float*)malloc(Lida->n * sizeof(float));
+	for(int j = 0;j < Lida->n;j++){//coluna
+		matriz->VetorX[j] = 0;
 	}
 }
 
@@ -75,33 +78,49 @@ void Seta_Valores_Structs_Verifica_0(ARQUIVO *Verifica){
 	Verifica->x=(float*)malloc(sizeof(float));
 	Verifica->y=(float*)malloc(sizeof(float));
 	Verifica->p=(float*)malloc(sizeof(float));
-	Verifica->x = false;
-	Verifica->y = false;
+	Verifica->x[0] = false;
+	Verifica->y[0] = false;
 	Verifica->n = false;
 	Verifica->a = false;
 	Verifica->b = false;
 	Verifica->i = false;
-	Verifica->p = false;
+	Verifica->p[0] = false;
 	Verifica->t = false;
 }
 bool Verifica_Arquivo_Valido(ARQUIVO Verifica){
 	//Verifica se todos campos da struct esta como true indicando que arquivo tem parametros corretos
-	if(Verifica.x == true){
-		if(Verifica.y == true){
+	if(Verifica.x[0] == true){
+		if(Verifica.y[0] == true){
 			if(Verifica.n == true){
 				if(Verifica.a == true){
 					if(Verifica.b == true){
 						if(Verifica.i == true){
-							if(Verifica.p == true){
+							if(Verifica.p[0] == true){
 								if(Verifica.t == true){
 									return true;//retorna true indicando que foi corretamente
+								}else{
+									printf("No t");
 								}
+							}else{
+								printf("No p");
 							}
+						}else{
+							printf("No i");
 						}
+					}else{
+						printf("No b");
 					}
+				}else{
+					printf("No a");
 				}
+			}else{
+				printf("No n");
 			}
+		}else{
+			printf("No y");
 		}
+	}else{
+		printf("No x");
 	}
 	return false;//retorna false indicando que nao foi corretamente
 }
@@ -120,7 +139,7 @@ int Interpolacao(char Url[],ARQUIVO *File){
 		printf("O arquivo não foi aberto\n");
 		return -1;
 	}
-
+	
 	//Le o Arquivo
 		while(!feof(Arquivo)){
 		fscanf(Arquivo,"%c",&Buff);
@@ -139,19 +158,19 @@ int Interpolacao(char Url[],ARQUIVO *File){
 			case 'n':
 				Verifica.n = true;
 				fscanf(Arquivo,"%c",&Buff);//Pula o espaço
-				fscanf(Arquivo,"%f",&File->n);//Le o Tamanho
+				fscanf(Arquivo,"%d",&File->n);//Le o Tamanho
 				fscanf(Arquivo,"%c",&Buff);//Pula o \n
 				break;
 			case 'x':
 				fscanf(Arquivo,"%c",&Buff);//Pula o espaço
-					File->x=(float*)malloc(sizeof(float));
+				File->x=(float*)malloc(sizeof(float));
 					for(int i = 1;i <= File->n;i++){
 						fscanf(Arquivo,"%f",&valor);
 						getc(Arquivo);//Pula
 						File->x=(float*)realloc(File->x,i * sizeof(float));
 						File->x[i-1] = valor;
 						if(i == File->n ){
-							Verifica.x = true;
+							Verifica.x[0] = true;
 						}
 					}
 				break;
@@ -160,11 +179,16 @@ int Interpolacao(char Url[],ARQUIVO *File){
 					File->y=(float*)malloc(sizeof(float));
 					for(int i = 1;i <= File->n;i++){
 					fscanf(Arquivo,"%f",&valor);
+					if(valor == '-'){
+						getc(Arquivo);
+						fscanf(Arquivo,"%f",&valor);
+						valor = valor * -1;
+					}
 					getc(Arquivo);	
 					File->y=(float*)realloc(File->y,i * sizeof(float));
 					File->y[i-1] = valor;
 					if(i == File->n ){
-						Verifica.i = true;
+						Verifica.y[0] = true;
 					}
 				}
 				break;
@@ -190,15 +214,15 @@ int Interpolacao(char Url[],ARQUIVO *File){
 				fscanf(Arquivo,"%c",&Buff);//Pula o \n
 				break;
 			case 'p':
+				File->p=(float*)malloc(sizeof(float));
 				fscanf(Arquivo,"%c",&Buff);//Pula o espaço
-					File->p=(float*)malloc(sizeof(float));
 					for(int i = 1;i <= File->i;i++){
 						fscanf(Arquivo,"%f",&valor);
 						getc(Arquivo); 	
 						File->p=(float*)realloc(File->p,i * sizeof(float));
 						File->p[i-1] = valor;
 						if(i == File->i ){
-							Verifica.p = true;
+							Verifica.p[0] = true;
 						}
 					}
 				break;
