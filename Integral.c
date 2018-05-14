@@ -50,13 +50,13 @@ void Prepara_Matriz(ARQUIVO *Lida,MATRIZ *matriz){
 	}
 	//preenche a MatrizA
 	for(int i = 0;i < Lida->n;i++){//linha
-		for(int j = 0;j < Lida->n;j++){//coluna
-			if(j == 0){
+		for(int j = (Lida->n - 1);j >= 0 ;j--){//coluna
+			if(j == Lida->n - 1){
 				matriz->MatrizA[i][j] = 1; // x⁰ = 1
-			}else if(j ==1){
+			}else if(j == Lida->n - 2){
 				matriz->MatrizA[i][j] = Lida->x[i];// x¹ = x
 			}else{
-				matriz->MatrizA[i][j] = matriz->MatrizA[i][j - 1] * matriz->MatrizA[i][1]; 
+				matriz->MatrizA[i][j] = matriz->MatrizA[i][j + 1] * matriz->MatrizA[i][Lida->n - 2]; 
 				// x^n = x^(n-1) * x
 				// Mais eficiente que POW
 			}

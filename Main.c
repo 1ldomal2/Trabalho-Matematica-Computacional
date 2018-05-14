@@ -26,19 +26,40 @@ Interpolacao("Input",&File);
 	
 Prepara_Matriz(&File,&Matriz_Interpolacao);
 
-
+for(int i = 0;i < File.n;i++)
+{
+	for(int j = 0;j < File.n;j++)
+{
+	printf("%f\t ",Matriz_Interpolacao.MatrizA[i][j]);
+}
+printf("\n");
+}
 Gauls(File.n,Matriz_Interpolacao.MatrizA,Matriz_Interpolacao.VetorB);
+printf("\n");
 
+printf("\n");
+
+for(int i = 0;i < File.n;i++)
+{
+	for(int j = 0;j < File.n;j++)
+{
+	printf("%f\t ",Matriz_Interpolacao.MatrizA[i][j]);
+}
+printf("\n");
+}
+printf("\n");
+printf("\n");
+printf("\n");	
+printf("\n");
 	
-	
-	SubsRetro(File.n, Matriz_Interpolacao.MatrizA, Matriz_Interpolacao.VetorB,Matriz_Interpolacao.VetorX);
-				printf("\n");
-			
-	for(int j = 0;j < File.n;j++){
-			printf("%f \t",Matriz_Interpolacao.VetorX[j]);
-		}
-		printf("\n");
-	
-	
+	for(int i = 0;i < File.n;i++)
+{
+	printf("%f\n ",Matriz_Interpolacao.VetorB[i]);
+}
+printf("\n");
+
+	SubsRetro(File.n, Matriz_Interpolacao.MatrizA, Matriz_Interpolacao.VetorB,
+	Matriz_Interpolacao.VetorX);
+		
 	return 0;
 }

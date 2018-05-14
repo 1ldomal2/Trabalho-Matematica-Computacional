@@ -1,8 +1,9 @@
 n 6
 # Lista de pontos tabelados entre [1.6, 6.7]
+#FUNCAO x^2 +3*x + 4;
 # x 1.6 2.5 3.0 4.2 5.4 6.7
 x 0 1 2 3 4 5  
-y 5 8 17 32 53 80
+y 10 109 262 523 946 1585
 # Intervalo da integral definida em [2,5]
 a 2
 b 5
