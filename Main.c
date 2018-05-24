@@ -170,23 +170,22 @@ void SubsRetro(int Tamanho,double **MatrizA,double VetorB[],double VetorX[]){
 }
 
 //Funcao responsavel por calcular a integral da funcao
-double Funcao(double Min,double Max,int NumeroTrapezios,ARQUIVO *Lido){
+double Funcao(ARQUIVO *Lido, MATRIZ *Interpolado){
 	//Descobre o Tamanho da altura ( que é o mesmo tamanho para todos)
-	double Range=Max-Min;
-	double Altura=(double)Range/NumeroTrapezios;
+	double Range = Lido->b - Lido->a;
+	double Altura=(double)Range/Lido->t;
 	//Somatorio das areas do trapeziozio;
-	double Ponto1=Min;//F(Min)
-	double Ponto2=Min+Range;//F(Min+Range)
-	double AreaTotal=0;
-	double Area;
-	for (int i = 1; i <=NumeroTrapezios; ++i)
-	{
-	//Area=(double) ( ( Horner(Ponto1) + Horner(Ponto2) ) * Altura) / 2 ) );   // (B+b)*H/2
-	//Horner(double Coeficiente[],int Tamanho,double DominioX);
-
-		Ponto1+=Range;
-		Ponto2+=Range;
-		AreaTotal+=Area;
+	double Ponto1=Lido->a;//F(Lido->a)
+	double Ponto2=Lido->a + Altura;//F(Lido->a+Range)
+	double AreaTotal = 0;
+	double Area = 0;
+	
+	for (int i = 0; i < Lido->t; ++i){
+		Area = (double) ((((Horner(Interpolado->VetorX,Lido->n, Ponto1) + Horner(Interpolado->VetorX,Lido->n, Ponto2)) * Altura) / 2 ));   // (B+b)*H/2
+		//Horner(double Coeficiente[],int Tamanho,double DominioX);
+		Ponto1 += Altura;
+		Ponto2 += Altura;
+		AreaTotal += Area;
 	}
 	return AreaTotal;//Retorna a area total
 }
@@ -298,7 +297,7 @@ int Interpolacao(char Url[],ARQUIVO *File){
 				break;
 			case 'x'://Caso caractere X
 				fscanf(Arquivo,"%c",&Buff);//Pula o espaço
-				File->x=(double*)malloc(sizeof(double)); Aloca o ponteiro na memoria
+				File->x=(double*)malloc(sizeof(double));// Aloca o ponteiro na memoria
 					for(int i = 1;i <= File->n;i++){
 						fscanf(Arquivo,"%lf",&valor);//le o valor
 						getc(Arquivo);//Pula
@@ -365,7 +364,7 @@ int Interpolacao(char Url[],ARQUIVO *File){
 				fscanf(Arquivo,"%c",&Buff);//Pula o espaço
 				fscanf(Arquivo,"%lf",&valor);
 				getc(Arquivo); 	
-				File->i = valor;//recebe o valor
+				File->t = valor;//recebe o valor
 				fscanf(Arquivo,"%c",&Buff);//Pula o \n
 				Verifica.t = true;//verificador recebe true indicando que o valor foi lido
 				break;
@@ -379,17 +378,175 @@ int Interpolacao(char Url[],ARQUIVO *File){
 				break;
 		}
 	}
+	fclose(Arquivo);
 	if(Verifica_Arquivo_Valido(Verifica) == false){//se passou pelo arquivo todo e o verificador se manteve em falso indica que o arquivo esta incompleto
 		printf("Erro ao ler arquivo incompleto\n");//mostra na tela
 		return -3;//sai da funcao com retorno de erro referente ao arquivo incompleto
 	}
+	
 	return 0;//sai da funcao com retorno padrao
+}
+
+int OutPut(ARQUIVO File,char ArqOut[], MATRIZ Matriz_Interpolacao){
+	FILE *Arquivo = fopen(ArqOut,"w");
+	if(Arquivo == NULL){
+		printf("Erro ao abrir o arquivo");
+		return -5;
+	}
+	fprintf(Arquivo,"######################################################################\n");
+	fprintf(Arquivo,"# Script automatico gerado por ‘trapezium', software de interpolação \n");
+	fprintf(Arquivo,"# e integracao numerica\n");
+	fprintf(Arquivo,"######################################################################\n\n");
+
+	fprintf(Arquivo,"# Nome da figura\n\n");
+
+	fprintf(Arquivo,"nome <- '%s.png'\n",ArqOut);
+
+	fprintf(Arquivo,"# Dados tabelados\n\n");
+
+	fprintf(Arquivo,"x.tab <- c(");
+	fprintf(Arquivo, "%lf",File.x[0]);
+
+	for (int i = 1; i < File.n; ++i)
+	{
+		fprintf(Arquivo, ", %lf",File.x[i]);
+	}
+
+	fprintf(Arquivo,");\n\n");
+
+	fprintf(Arquivo,"y.tab <- c(");
+	fprintf(Arquivo, "%lf",File.y[0]);
+	for (int i = 1; i < File.n; ++i)
+	{
+		fprintf(Arquivo, ", %lf",File.y[i]);
+	}
+	fprintf(Arquivo,");\n\n");
+	fprintf(Arquivo,"# Pontos interpolados, calculados pelo ‘trapezium'\n\n");
+
+	double Rang = (File.b - File.a) / File.t;
+	double Ponto = Rang;
+	fprintf(Arquivo,"x.int <- c(");
+	
+	//Rang=(Max-Min)/2     COMO DESCOBRIR RANG?????
+	//Ponto=Rang;
+	fprintf(Arquivo, "%lf",Ponto);
+	for (int i = 1; i < File.t; ++i)
+	{
+		Ponto+=Rang;
+		fprintf(Arquivo, ", %lf",Ponto);
+	}
+	fprintf(Arquivo,");\n\n");
+
+
+	fprintf(Arquivo,"y.int <- c(");
+	//Ponto=Rang;
+	fprintf(Arquivo, "%lf",Horner(Matriz_Interpolacao.VetorX,File.n,Ponto));//HORNER NO PONTO
+	for (int i = 1; i < File.t; ++i)
+	{
+		Ponto+=Rang;
+		fprintf(Arquivo, ", %lf",Horner(Matriz_Interpolacao.VetorX,File.n,Ponto));//HORNER NO PONTO
+	}
+	fprintf(Arquivo,");\n\n");
+
+
+	fprintf(Arquivo,"# Coeficientes do polinomio interpolador\n\n");
+
+	fprintf(Arquivo,"coef <- c(");//N
+
+	fprintf(Arquivo, "%lf",Matriz_Interpolacao.VetorX[0]);
+	for (int i = 1; i < File.n; ++i){
+		fprintf(Arquivo, ", %lf",Matriz_Interpolacao.VetorX[i]);
+	}
+	fprintf(Arquivo,");\n\n");
+
+	fprintf(Arquivo,"# Numero de pontos da tabela\n\n");
+
+	fprintf(Arquivo,"n.tab <- ");
+	fprintf(Arquivo,"%d",File.n);
+	fprintf(Arquivo,";\n\n");
+
+
+	fprintf(Arquivo,"# Numero de pontos a interpolar\n\n");
+
+	fprintf(Arquivo,"n.int <- ");
+	fprintf(Arquivo,"%d",(int)File.n);
+	fprintf(Arquivo,";\n\n");
+
+	fprintf(Arquivo,"# Numero de trapezios\n");
+
+	fprintf(Arquivo,"n.tpz <- ");
+	fprintf(Arquivo,"%d",(int)File.t);
+
+	fprintf(Arquivo,";\n# Titulo\n");
+
+	fprintf(Arquivo,"titulo <- \"P(x) = ");//Vetor x
+
+	fprintf(Arquivo,"((%f)*X^%d )",Matriz_Interpolacao.VetorX[0],((File.n)-1));
+	for (int i = 1; i < File.n; ++i)
+	{
+		fprintf(Arquivo,"+ ((%f)*X^%d )",Matriz_Interpolacao.VetorX[i],((File.n - i)-1));
+	}
+	fprintf(Arquivo, "\";\n");
+
+	//Parte Estática
+	fprintf(Arquivo,"#\n\
+	# Esta parte do script deve funcionar desde que os parametros\n\
+	# acima estejam devidamente preenchidos. E' a parte estatica\n\
+	# do script. Copiar exatamente desta forma no arquivo de saida.\n\
+	#\n\
+	# Calcula o valor interpolado para o pto x\n\
+	polinomio <- function(x, coef, n)\n\
+	{\n\
+		\tresultado <- 0;\n\
+		\tfor(i in 1:n)\n\
+		\t{\n\
+			\t\tresultado <- resultado + coef[i]*(x^(i-1));\n\
+		\t}\n\
+		\treturn(resultado);\n\
+	}\n\
+	#\n\
+	# Aqui comecam os comandos para plotar os resultados\n\
+	#\n\
+	# Cria o arquivo .png\n\
+	png(nome);\n\
+	# Gerando figura com 100 pontos\n\
+	gap <- (max(x.tab) - min(x.tab)) / 100;\n\
+	x <- seq(min(x.tab), max(x.tab), gap);\n\
+	y <- polinomio(x, coef, n.tab);\n\
+	plot(x,y,type='l', main=titulo);\n\
+	# Plota os trapezios\n\
+	h <- (max(x.tab) - min(x.tab)) / n.tpz;\n\
+	xp <- seq(min(x.tab), max(x.tab), h);\n\
+	yp <- polinomio(xp, coef, n.tab);\n\
+	for(i in 1:(n.tpz))\n\
+	{\n\
+	polygon(c(xp[i], xp[i], xp[i+1], xp[i+1], xp[i]),\n\
+	c(0, yp[i], yp[i+1], 0, 0),\n\
+	col='yellow', border='black', lty=2, lwd=1.3);\n\
+	\n\
+	}\n\
+	# Pontos da tabela\n\
+	for(i in 1:n.tab)\n\
+	{\n\
+		\tpoints(x.tab[i], y.tab[i], col='red', pch=19);\n\
+	}\n\
+	# Pontos interpolados\n\
+	\n\
+	for(i in 1:n.tab)\n\
+	{\n\
+		\tpoints(x.int[i], y.int[i], col='blue', pch=19);\n\
+	}\n\
+	# Encerra a criacao do arquivo .png\n\
+	dev.off();\n\
+	");
+	fclose(Arquivo);
 }
 
 int main(int argc, char const *argv[])
 {
 	ARQUIVO File;
 	MATRIZ Matriz_Interpolacao;
+	double Integral = 0;
 	if(argc < 3){//caso argumentos menor que 3
 		if(argc == 1){//caso tenha passado apenas um argumento
 			printf("Não foi passado o arquivo contendo os dados de entrada\n");//Mostra erro
@@ -414,7 +571,7 @@ int main(int argc, char const *argv[])
 		if(Matriz_Interpolacao.VetorX[i] == 0){
 			break;
 		}
-		printf(" %lf*(X^%d) +",Matriz_Interpolacao.VetorX[i],(File.n - i));
+		printf(" %lf*(X^%d) +",Matriz_Interpolacao.VetorX[i],((File.n - i)-1));
 	}
 	printf("\b\b  \n\n");
 	/*double Resultado_Horner[File.t];
@@ -424,8 +581,10 @@ int main(int argc, char const *argv[])
 	for(int i = 0;i<File.n;i++){//chama o horner para mostrar a imagem do valor passado
 		printf("P(%lf) = %lf\n",File.x[i],Horner(Matriz_Interpolacao.VetorX,File.n,File.x[i]));
 	}
-	
-	
+	Integral = Funcao(&File, &Matriz_Interpolacao);
 
+	printf("Integral em [%lf,%lf] = %f\n", File.a,File.b,Integral);
+	strcpy(Url,argv[2]);
+	OutPut(File,Url,Matriz_Interpolacao);
 	return 0;
 }

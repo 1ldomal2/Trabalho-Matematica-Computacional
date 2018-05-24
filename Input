@@ -6,7 +6,7 @@ x 0 1 2 3 4 5
 y 4 8 14 22 32 44
 # Intervalo da integral definida em [2,5]
 a 2
-b 5
+b 6
 # Lista de pontos a interpolar
 i 3
 p 2.0 3.5 4.0
