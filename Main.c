@@ -31,10 +31,6 @@ typedef struct Matrizes{//Struct responsavel por representar as matrizes que ser
 	double *VetorX;
 }MATRIZ;
 
-/*
-ERRO ao realizar a subs retro, a constante ta dando erro tentamos truncar e nao funcionou 
-erro de arrendodamento sera?
-*/
 //Resolve uma função Polinomial de maneira mais eficiente
 //Recebe Um vetor com os coeficiente o tamanho do vetor e o valor de X
 //Retorna f(x) ou seja a imagem no ponto X
@@ -386,21 +382,23 @@ int Interpolacao(char Url[],ARQUIVO *File){
 	
 	return 0;//sai da funcao com retorno padrao
 }
-
+/*
+	Funcao responsavel por gerar arquivo de saida
+*/
 int OutPut(ARQUIVO File,char ArqOut[], MATRIZ Matriz_Interpolacao){
 	FILE *Arquivo = fopen(ArqOut,"w");
-	if(Arquivo == NULL){
-		printf("Erro ao abrir o arquivo");
-		return -5;
+	if(Arquivo == NULL){//caso nao consiga abrir o arquivo
+		printf("Erro ao abrir o arquivo");//mostra mensagem de eroo
+		return -5;//sai da funcao retornando numero de erro
 	}
 	fprintf(Arquivo,"######################################################################\n");
 	fprintf(Arquivo,"# Script automatico gerado por ‘trapezium', software de interpolação \n");
 	fprintf(Arquivo,"# e integracao numerica\n");
 	fprintf(Arquivo,"######################################################################\n\n");
-
+	//printa cabeçalho do arquivo
 	fprintf(Arquivo,"# Nome da figura\n\n");
 
-	fprintf(Arquivo,"nome <- '%s.png'\n",ArqOut);
+	fprintf(Arquivo,"nome <- '%s.png'\n",ArqOut);//nome da figura
 
 	fprintf(Arquivo,"# Dados tabelados\n\n");
 
@@ -564,27 +562,32 @@ int main(int argc, char const *argv[])
 	Matriz_Interpolacao.VetorX);
 	//realiza a substituicao para receber os valores de x
 	//Mostra o relatorio no console
-	printf("Trapezium: Interpolador/Integrador Numerico\n");
+	printf("Trapezium: Interpolador/Integrador Numerico\n");//Começo do relatorio no terminal
 	printf("Polinomio Interpolador:\n");
-	printf("\nP(x) = ");
+	printf("\nP(x) = ");//Mostra a funcao que foi interpolada
 	for(int i = (File.n - 1);i >= 0;i--){
-		if(Matriz_Interpolacao.VetorX[i] == 0){
-			break;
+		if(Matriz_Interpolacao.VetorX[i] == 0){//caso vetor na posicao atual seja 0
+			break;//pula para a proxima posicao
 		}
 		printf(" %lf*(X^%d) +",Matriz_Interpolacao.VetorX[i],((File.n - i)-1));
+		//mostra o elemento => (constante) *  x ^(expoente)
 	}
-	printf("\b\b  \n\n");
-	/*double Resultado_Horner[File.t];
-	for(int i = 0; i < File.t,i++){
-		Resultado_Horner[i] = Horner(Matriz_Interpolacao.VetorX,File.n,File.x[i]);
-	}*/
-	for(int i = 0;i<File.n;i++){//chama o horner para mostrar a imagem do valor passado
-		printf("P(%lf) = %lf\n",File.x[i],Horner(Matriz_Interpolacao.VetorX,File.n,File.x[i]));
+	printf("\b\b  \n\n");//Volta ponteiro de escrita 2 vezes e printa espacos em branco
+	
+	for(int i = 0;i<File.i;i++){//chama o horner para mostrar a imagem do valor passado
+		printf("P(%lf) = %lf\n",File.p[i],Horner(Matriz_Interpolacao.VetorX,File.i,File.p[i]));
 	}
-	Integral = Funcao(&File, &Matriz_Interpolacao);
-
+	Integral = Funcao(&File, &Matriz_Interpolacao);//Chama funcao responsavel por realizar 
+	//o calculo da integral da funcao que foi interpolada utilizando regra do trapezio
 	printf("Integral em [%lf,%lf] = %f\n", File.a,File.b,Integral);
-	strcpy(Url,argv[2]);
+	//printa o valor da integral no intervalo passado
+	if(argc < 3){//caso nao tenha passado o argumento para o nome de saida
+		strcpy(Url,"Saida.R");//coloca um nome padrao para evitar erros
+	}else{
+		strcpy(Url,argv[2]);//caso tenha passado o nome do arquivo de de saida utiliza o nome que o usuario passou
+
+	}
 	OutPut(File,Url,Matriz_Interpolacao);
+	//chama funcao responsavel por gerar arquivo de saida
 	return 0;
 }
