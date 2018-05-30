@@ -421,28 +421,21 @@ int OutPut(ARQUIVO File,char ArqOut[], MATRIZ Matriz_Interpolacao){
 	fprintf(Arquivo,");\n\n");
 	fprintf(Arquivo,"# Pontos interpolados, calculados pelo ‘trapezium'\n\n");
 
-	double Rang = (File.b - File.a) / File.t;
-	double Ponto = Rang;
 	fprintf(Arquivo,"x.int <- c(");
 	
-	//Rang=(Max-Min)/2     COMO DESCOBRIR RANG?????
-	//Ponto=Rang;
-	fprintf(Arquivo, "%lf",Ponto);
-	for (int i = 1; i < File.t; ++i)
+	fprintf(Arquivo, "%lf",File.p[0]);
+	for (int i = 1; i < File.i; ++i)
 	{
-		Ponto+=Rang;
-		fprintf(Arquivo, ", %lf",Ponto);
+		fprintf(Arquivo, ", %lf",File.p[i]);
 	}
 	fprintf(Arquivo,");\n\n");
 
 
 	fprintf(Arquivo,"y.int <- c(");
-	//Ponto=Rang;
-	fprintf(Arquivo, "%lf",Horner(Matriz_Interpolacao.VetorX,File.n,Ponto));//HORNER NO PONTO
-	for (int i = 1; i < File.t; ++i)
+	fprintf(Arquivo, "%lf",Horner(Matriz_Interpolacao.VetorX,File.n,File.p[0]));//HORNER NO PONTO
+	for (int i = 1; i < File.i; ++i)
 	{
-		Ponto+=Rang;
-		fprintf(Arquivo, ", %lf",Horner(Matriz_Interpolacao.VetorX,File.n,Ponto));//HORNER NO PONTO
+		fprintf(Arquivo, ", %lf",Horner(Matriz_Interpolacao.VetorX,File.n,File.p[i]));//HORNER NO PONTO
 	}
 	fprintf(Arquivo,");\n\n");
 
@@ -451,9 +444,14 @@ int OutPut(ARQUIVO File,char ArqOut[], MATRIZ Matriz_Interpolacao){
 
 	fprintf(Arquivo,"coef <- c(");//N
 
-	fprintf(Arquivo, "%lf",Matriz_Interpolacao.VetorX[0]);
-	for (int i = 1; i < File.n; ++i){
-		fprintf(Arquivo, ", %lf",Matriz_Interpolacao.VetorX[i]);
+	for (int i = (File.n); i >= 0; --i){
+		if(Matriz_Interpolacao.VetorX[i] != 0){
+			if(i != 0){
+			fprintf(Arquivo, "%lf, ",Matriz_Interpolacao.VetorX[i]);
+			}else{
+				fprintf(Arquivo, "%lf",Matriz_Interpolacao.VetorX[i]);
+			}
+		}
 	}
 	fprintf(Arquivo,");\n\n");
 
@@ -467,7 +465,7 @@ int OutPut(ARQUIVO File,char ArqOut[], MATRIZ Matriz_Interpolacao){
 	fprintf(Arquivo,"# Numero de pontos a interpolar\n\n");
 
 	fprintf(Arquivo,"n.int <- ");
-	fprintf(Arquivo,"%d",(int)File.n);
+	fprintf(Arquivo,"%d",(int)File.i);
 	fprintf(Arquivo,";\n\n");
 
 	fprintf(Arquivo,"# Numero de trapezios\n");
@@ -482,6 +480,9 @@ int OutPut(ARQUIVO File,char ArqOut[], MATRIZ Matriz_Interpolacao){
 	fprintf(Arquivo,"((%f)*X^%d )",Matriz_Interpolacao.VetorX[0],((File.n)-1));
 	for (int i = 1; i < File.n; ++i)
 	{
+		if((i % 3)==0){
+			fprintf(Arquivo,"\n");
+		}
 		fprintf(Arquivo,"+ ((%f)*X^%d )",Matriz_Interpolacao.VetorX[i],((File.n - i)-1));
 	}
 	fprintf(Arquivo, "\";\n");
@@ -575,7 +576,7 @@ int main(int argc, char const *argv[])
 	printf("\b\b  \n\n");//Volta ponteiro de escrita 2 vezes e printa espacos em branco
 	
 	for(int i = 0;i<File.i;i++){//chama o horner para mostrar a imagem do valor passado
-		printf("P(%lf) = %lf\n",File.p[i],Horner(Matriz_Interpolacao.VetorX,File.i,File.p[i]));
+		printf("P(%lf) = %lf\n",File.p[i],Horner(Matriz_Interpolacao.VetorX,File.n,File.p[i]));
 	}
 	Integral = Funcao(&File, &Matriz_Interpolacao);//Chama funcao responsavel por realizar 
 	//o calculo da integral da funcao que foi interpolada utilizando regra do trapezio
