@@ -6,13 +6,13 @@
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
+//inclui bibliotecas
 
 #define DEBUG printf("\nLinha = %d Arquivo = %s\n",__LINE__,__FILE__);
-#define true 1
+//define constante para debugar codigo e encontrar possiveis erros
+#define true 1//define valor para representar true e false
 #define false 0
-
-#define  ERRO  0.001
-#define DEBUG printf("\nLinha = %d Arquivo = %s\n",__LINE__,__FILE__);
+#define  ERRO  0.001//define erro para executar aproximacoes 
 
 typedef int bool;//Cria um tipo para simular retornos do tipo Boolean
 typedef struct arquivo{//struct para receber valores lido do arquivo
@@ -39,51 +39,48 @@ double Horner(double Coeficiente[],int Tamanho,double DominioX){
 		for (int i = 1; i < Tamanho; ++i){
 		ImagemY=ImagemY*DominioX+Coeficiente[i];
 	}
-	return ImagemY;
+	return ImagemY;//retorna a imagem do ponto passado
 }
 /*
 Funcao responsavel por realizar a triangulacao da matriz ou seja ira zerar os valores a baixo da 
 diagonal principal, vale ressaltar que ela realiza um pivotiamento dos valores caso seja necessario
 */
 void Gauls(int Tamanho,double **MatrizA,double VetorB[]){
-	//Cria Dois vetores para trocar matriz                                                     
+	//Cria Dois vetores para realizar trocas de linhas da matriz  
 	double VetorSwapA[Tamanho];
 	double VetorSwapB[Tamanho];
 	double Aux = 0;
-	//Inicializa os Vetores do Swap
+	//Inicializa os Vetores do Swap para evitar lixo de memoria
 	for (int i = 0; i < Tamanho; ++i)
 	{
-		 VetorSwapA[i]=0;
-		 VetorSwapB[i]=0;
+		 VetorSwapA[i]=0;//zera vetor de troca
+		 VetorSwapB[i]=0;//zera vetor de troca
 	}
-
 	//Vai da primeira até a penultima linha zerando-as
 	for (int Pivo = 0; Pivo < (Tamanho-1); ++Pivo)
 	{
-		int IndiceMaior = Pivo;
-		double Maior = MatrizA[Pivo][Pivo];
+		int IndiceMaior = Pivo;//indice maior inicialmente recebe o Pivo
+		double Maior = MatrizA[Pivo][Pivo];//maior elemento recebe pivo
 
 		//Faz as trocas da linha Pivo
-		for (int SwapIndice = Pivo; SwapIndice < Tamanho; ++SwapIndice)
-		{
+		for (int SwapIndice = Pivo; SwapIndice < Tamanho; ++SwapIndice){
 			if(SwapIndice != Pivo){
 				if (fabs(Maior)<fabs(MatrizA[SwapIndice][Pivo]))
-				{
-					 IndiceMaior = SwapIndice;
-					 Maior = MatrizA[SwapIndice][Pivo];
+				{//verifica se é maior em modulo que o atual maior
+					 IndiceMaior = SwapIndice;//recebe o indice do maior
+					 Maior = MatrizA[SwapIndice][Pivo];//recebe o maior elemento
 				}
 			}
 		}
-
-		//Troca
+		//Realiza a Troca
 		for (int i = 0; i < Tamanho; ++i)
 		{
-			//Swap A
+			//Swap A da Matriz
 			 VetorSwapA[i]=MatrizA[Pivo][i];
 			 MatrizA[Pivo][i]=MatrizA[IndiceMaior][i];
 			 MatrizA[IndiceMaior][i]=VetorSwapA[i];
 		}
-		//Swap B
+		//Swap B Vetor
 		Aux=VetorB[Pivo];
 		VetorB[Pivo]=VetorB[IndiceMaior];
 		VetorB[IndiceMaior]=Aux;
@@ -94,7 +91,6 @@ void Gauls(int Tamanho,double **MatrizA,double VetorB[]){
 		for (int LinhaTrabalha = (Pivo+1); LinhaTrabalha < Tamanho; ++LinhaTrabalha)
 		{
 			 Escalar=MatrizA[LinhaTrabalha][Pivo]/MatrizA[Pivo][Pivo];
-		
 			//Resolução Começa a Zerar
 			for (int Coluna = 0; Coluna < Tamanho; ++Coluna)
 			{
@@ -110,13 +106,13 @@ void Gauls(int Tamanho,double **MatrizA,double VetorB[]){
 	return;
 }
 /*
-	Funcao responsavel por realizar a substitucao da matriz com o intuito de encontrar os valores
-	de x 
+	Funcao responsavel por realizar a substitucao retroativa da matriz com o intuito de encontrar os valores de x 
 */
 void SubsRetro(int Tamanho,double **MatrizA,double VetorB[],double VetorX[]){
 	double Somatorio = 0;
 	double AuxTruc = 0;
 	double Aux = 0, Aux1 = 0;
+	//..declara variaveis
 
 	//Zera matriz para evitar erros
 	for(int i = 0;i < Tamanho;i++)
@@ -165,7 +161,9 @@ void SubsRetro(int Tamanho,double **MatrizA,double VetorB[],double VetorX[]){
 	}
 }
 
-//Funcao responsavel por calcular a integral da funcao
+/*
+	Funcao responsavel por calcular a integral da funcao
+*/
 double Funcao(ARQUIVO *Lido, MATRIZ *Interpolado){
 	//Descobre o Tamanho da altura ( que é o mesmo tamanho para todos)
 	double Range = Lido->b - Lido->a;
@@ -173,21 +171,21 @@ double Funcao(ARQUIVO *Lido, MATRIZ *Interpolado){
 	//Somatorio das areas do trapeziozio;
 	double Ponto1=Lido->a;//F(Lido->a)
 	double Ponto2=Lido->a + Altura;//F(Lido->a+Range)
-	double AreaTotal = 0;
-	double Area = 0;
+	double AreaTotal = 0;//zera a area total para evitar erros
+	double Area = 0;//zera a area do trapezio para evitar erros
 	
 	for (int i = 0; i < Lido->t; ++i){
 		Area = (double) ((((Horner(Interpolado->VetorX,Lido->n, Ponto1) + Horner(Interpolado->VetorX,Lido->n, Ponto2)) * Altura) / 2 ));   // (B+b)*H/2
-		//Horner(double Coeficiente[],int Tamanho,double DominioX);
-		Ponto1 += Altura;
-		Ponto2 += Altura;
-		AreaTotal += Area;
+		Ponto1 += Altura;//recebe proximo ponto
+		Ponto2 += Altura;//recebe proximo ponto
+		AreaTotal += Area;//soma a area do trapezio encontrada a area total da funcao
 	}
 	return AreaTotal;//Retorna a area total
 }
-
+/*
+	Funcao responsavel por preparar a matriz com base nos valores lidos do arquivo
+*/
 void Prepara_Matriz(ARQUIVO *Lida,MATRIZ *matriz){
-	//Funcao responsavel por preparar a matriz com base nos valores lidos do arquivo
 	matriz->MatrizA = (double**)malloc(Lida->n * sizeof(double*));//aloca as linhas da matriz
 	for(int i = 0;i < Lida->n;i++){//aloca as colunas da matriz
 		matriz->MatrizA[i] = (double*)malloc(Lida->n * sizeof(double));
@@ -256,29 +254,29 @@ bool Verifica_Arquivo_Valido(ARQUIVO Verifica){
 }
 
 /*
-funcao responsavel por ler os valores do arquivo
+	funcao responsavel por ler os valores do arquivo
 */
 int Interpolacao(char Url[],ARQUIVO *File){
-	FILE *Arquivo;
+	FILE *Arquivo; //ponteiro para abrir arquivo
 	ARQUIVO Verifica;
 	Seta_Valores_Structs_Verifica_0(&Verifica);//seta valores como 0
-	Arquivo=fopen(Url,"r");
-	char Buff;
-	double valor;
-	char String[999];
+	Arquivo=fopen(Url,"r");//abre arquivo em modo de leitura
+	char Buff;//char para ler primeiro caractere do arquivo
+	double valor;//valor para receber numero lido do arquivo
+	char String[9999];//string para pular linha do arquivo
 	//Verifica se o arquivo existe
 	if(Arquivo == NULL ){
 		printf("O arquivo não foi aberto\n");
 		return -1;//retorna -1 indicando que o arquivo nao existe
 	}
-	//Le o Arquivo
-		while(!feof(Arquivo)){
+	//Le o Arquivo ate encontrar o final
+	while(!feof(Arquivo)){
 		fscanf(Arquivo,"%c",&Buff);
-			if(feof(Arquivo)){//Caso chegue no fim do arquivo sai do LOOP
+		if(feof(Arquivo)){//Caso chegue no fim do arquivo sai do LOOP
 			break;
 		}
 		//Verifica se a linha é um comentario
-			if(Buff == '#'){
+		if(Buff == '#'){
 			fscanf(Arquivo,"%[^\n]s",String);
 			//Pula o /n
 			getc(Arquivo);
@@ -369,12 +367,12 @@ int Interpolacao(char Url[],ARQUIVO *File){
 			case ' '://caso encontre algum espaco
 				break;
 			default://se ler algum caractere diferente do esperado 
-				printf("Erro ao ler\n");//mostra erro
+				printf("Erro ao ler, arquivo invalido\n");//mostra erro
 				return -2;//sai funcao
 				break;
 		}
 	}
-	fclose(Arquivo);
+	fclose(Arquivo);//fecha arquivo para eviar erros
 	if(Verifica_Arquivo_Valido(Verifica) == false){//se passou pelo arquivo todo e o verificador se manteve em falso indica que o arquivo esta incompleto
 		printf("Erro ao ler arquivo incompleto\n");//mostra na tela
 		return -3;//sai da funcao com retorno de erro referente ao arquivo incompleto
@@ -386,7 +384,7 @@ int Interpolacao(char Url[],ARQUIVO *File){
 	Funcao responsavel por gerar arquivo de saida
 */
 int OutPut(ARQUIVO File,char ArqOut[], MATRIZ Matriz_Interpolacao){
-	FILE *Arquivo = fopen(ArqOut,"w");
+	FILE *Arquivo = fopen(ArqOut,"w");//abre arquivo em modo de escrita
 	if(Arquivo == NULL){//caso nao consiga abrir o arquivo
 		printf("Erro ao abrir o arquivo");//mostra mensagem de eroo
 		return -5;//sai da funcao retornando numero de erro
@@ -398,25 +396,25 @@ int OutPut(ARQUIVO File,char ArqOut[], MATRIZ Matriz_Interpolacao){
 	//printa cabeçalho do arquivo
 	fprintf(Arquivo,"# Nome da figura\n\n");
 
-	fprintf(Arquivo,"nome <- '%s.png'\n",ArqOut);//nome da figura
+	fprintf(Arquivo,"nome <- '%s.png'\n",ArqOut);//nome do arquivo de saida
 
 	fprintf(Arquivo,"# Dados tabelados\n\n");
 
 	fprintf(Arquivo,"x.tab <- c(");
-	fprintf(Arquivo, "%lf",File.x[0]);
+	fprintf(Arquivo, "%lf",File.x[0]);//printa coeficientes X lidos do arquivo
 
 	for (int i = 1; i < File.n; ++i)
 	{
-		fprintf(Arquivo, ", %lf",File.x[i]);
+		fprintf(Arquivo, ", %lf",File.x[i]);//printa coeficientes X lidos do arquivo
 	}
 
 	fprintf(Arquivo,");\n\n");
 
 	fprintf(Arquivo,"y.tab <- c(");
-	fprintf(Arquivo, "%lf",File.y[0]);
+	fprintf(Arquivo, "%lf",File.y[0]);//printa coeficientes Y lidos do arquivo
 	for (int i = 1; i < File.n; ++i)
 	{
-		fprintf(Arquivo, ", %lf",File.y[i]);
+		fprintf(Arquivo, ", %lf",File.y[i]);///printa coeficientes y lidos do arquivo
 	}
 	fprintf(Arquivo,");\n\n");
 	fprintf(Arquivo,"# Pontos interpolados, calculados pelo ‘trapezium'\n\n");
@@ -426,16 +424,16 @@ int OutPut(ARQUIVO File,char ArqOut[], MATRIZ Matriz_Interpolacao){
 	fprintf(Arquivo, "%lf",File.p[0]);
 	for (int i = 1; i < File.i; ++i)
 	{
-		fprintf(Arquivo, ", %lf",File.p[i]);
+		fprintf(Arquivo, ", %lf",File.p[i]);//printa coeficientes a serem interpolados
 	}
 	fprintf(Arquivo,");\n\n");
 
 
 	fprintf(Arquivo,"y.int <- c(");
-	fprintf(Arquivo, "%lf",Horner(Matriz_Interpolacao.VetorX,File.n,File.p[0]));//HORNER NO PONTO
+	fprintf(Arquivo, "%lf",Horner(Matriz_Interpolacao.VetorX,File.n,File.p[0]));//HORNER NO PONTO X que foi passado
 	for (int i = 1; i < File.i; ++i)
 	{
-		fprintf(Arquivo, ", %lf",Horner(Matriz_Interpolacao.VetorX,File.n,File.p[i]));//HORNER NO PONTO
+		fprintf(Arquivo, ", %lf",Horner(Matriz_Interpolacao.VetorX,File.n,File.p[i]));//HORNER NO PONTO X que foi passado
 	}
 	fprintf(Arquivo,");\n\n");
 
@@ -446,9 +444,9 @@ int OutPut(ARQUIVO File,char ArqOut[], MATRIZ Matriz_Interpolacao){
 
 	for (int i = (File.n); i >= 0; --i){
 		if(Matriz_Interpolacao.VetorX[i] != 0){
-			if(i != 0){
-			fprintf(Arquivo, "%lf, ",Matriz_Interpolacao.VetorX[i]);
-			}else{
+			if(i != 0){//caso nao seja o ultimo a printar insere virgula
+				fprintf(Arquivo, "%lf, ",Matriz_Interpolacao.VetorX[i]);
+			}else{//caso seja o ultimo valor nao insere virgula
 				fprintf(Arquivo, "%lf",Matriz_Interpolacao.VetorX[i]);
 			}
 		}
@@ -458,36 +456,36 @@ int OutPut(ARQUIVO File,char ArqOut[], MATRIZ Matriz_Interpolacao){
 	fprintf(Arquivo,"# Numero de pontos da tabela\n\n");
 
 	fprintf(Arquivo,"n.tab <- ");
-	fprintf(Arquivo,"%d",File.n);
+	fprintf(Arquivo,"%d",File.n);//tamanho da matriz
 	fprintf(Arquivo,";\n\n");
 
 
 	fprintf(Arquivo,"# Numero de pontos a interpolar\n\n");
 
 	fprintf(Arquivo,"n.int <- ");
-	fprintf(Arquivo,"%d",(int)File.i);
+	fprintf(Arquivo,"%d",(int)File.i);//tamanho de pontos a interpolar
 	fprintf(Arquivo,";\n\n");
 
 	fprintf(Arquivo,"# Numero de trapezios\n");
 
 	fprintf(Arquivo,"n.tpz <- ");
-	fprintf(Arquivo,"%d",(int)File.t);
+	fprintf(Arquivo,"%d",(int)File.t);//numero de trapezios
 
 	fprintf(Arquivo,";\n# Titulo\n");
 
-	fprintf(Arquivo,"titulo <- \"P(x) = ");//Vetor x
+	fprintf(Arquivo,"titulo <- \"P(x) = ");//Vetor X sera o titulo da figura
 
 	fprintf(Arquivo,"((%f)*X^%d )",Matriz_Interpolacao.VetorX[0],((File.n)-1));
 	for (int i = 1; i < File.n; ++i)
 	{
-		if((i % 3)==0){
+		if((i % 3)==0){//a cada 3 printados quebra linha
 			fprintf(Arquivo,"\n");
 		}
 		fprintf(Arquivo,"+ ((%f)*X^%d )",Matriz_Interpolacao.VetorX[i],((File.n - i)-1));
 	}
 	fprintf(Arquivo, "\";\n");
 
-	//Parte Estática
+	//Parte Estática do arquivo, literalmente copiada e colada aqui...
 	fprintf(Arquivo,"#\n\
 	# Esta parte do script deve funcionar desde que os parametros\n\
 	# acima estejam devidamente preenchidos. E' a parte estatica\n\
@@ -538,14 +536,15 @@ int OutPut(ARQUIVO File,char ArqOut[], MATRIZ Matriz_Interpolacao){
 	# Encerra a criacao do arquivo .png\n\
 	dev.off();\n\
 	");
-	fclose(Arquivo);
+	fclose(Arquivo);//fecha arquivo para evitar erros
 }
 
 int main(int argc, char const *argv[])
 {
-	ARQUIVO File;
-	MATRIZ Matriz_Interpolacao;
-	double Integral = 0;
+	ARQUIVO File;//declara struct do arquivo
+	MATRIZ Matriz_Interpolacao;//struct que contem dados da matriz interpolada
+	double Integral = 0;//valor da integral da funcao é iniciado em zero
+	char Url[999];//declara url para receber entrada e saida do arquivo
 	if(argc < 3){//caso argumentos menor que 3
 		if(argc == 1){//caso tenha passado apenas um argumento
 			printf("Não foi passado o arquivo contendo os dados de entrada\n");//Mostra erro
@@ -553,8 +552,7 @@ int main(int argc, char const *argv[])
 		}
 		printf("Foram passados poucos argumentos\n");//mostra alerta
 	}
-	char Url[999];
-	strcpy(Url,argv[1]);
+	strcpy(Url,argv[1]);//copia arquivo de entrada para a URL
 	//copia o arquivo de entrada para a url
 	Interpolacao(Url,&File);//chama funcao para ler do arquivo
 	Prepara_Matriz(&File,&Matriz_Interpolacao);//prepara a matriz
@@ -574,7 +572,6 @@ int main(int argc, char const *argv[])
 		//mostra o elemento => (constante) *  x ^(expoente)
 	}
 	printf("\b\b  \n\n");//Volta ponteiro de escrita 2 vezes e printa espacos em branco
-	
 	for(int i = 0;i<File.i;i++){//chama o horner para mostrar a imagem do valor passado
 		printf("P(%lf) = %lf\n",File.p[i],Horner(Matriz_Interpolacao.VetorX,File.n,File.p[i]));
 	}
@@ -586,9 +583,8 @@ int main(int argc, char const *argv[])
 		strcpy(Url,"Saida.R");//coloca um nome padrao para evitar erros
 	}else{
 		strcpy(Url,argv[2]);//caso tenha passado o nome do arquivo de de saida utiliza o nome que o usuario passou
-
 	}
 	OutPut(File,Url,Matriz_Interpolacao);
 	//chama funcao responsavel por gerar arquivo de saida
-	return 0;
+	return 0;//finaliza programa
 }
