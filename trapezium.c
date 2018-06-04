@@ -442,14 +442,14 @@ int OutPut(ARQUIVO File,char ArqOut[], MATRIZ Matriz_Interpolacao){
 
 	fprintf(Arquivo,"coef <- c(");//N
 
-	for (int i = (File.n); i >= 0; --i){
-		if(Matriz_Interpolacao.VetorX[i] != 0){
+	for (int i = (File.n - 1); i >= 0; --i){
+		//if(Matriz_Interpolacao.VetorX[i] != 0){
 			if(i != 0){//caso nao seja o ultimo a printar insere virgula
 				fprintf(Arquivo, "%lf, ",Matriz_Interpolacao.VetorX[i]);
 			}else{//caso seja o ultimo valor nao insere virgula
 				fprintf(Arquivo, "%lf",Matriz_Interpolacao.VetorX[i]);
 			}
-		}
+		//}
 	}
 	fprintf(Arquivo,");\n\n");
 
@@ -565,13 +565,14 @@ int main(int argc, char const *argv[])
 	printf("Polinomio Interpolador:\n");
 	printf("\nP(x) = ");//Mostra a funcao que foi interpolada
 	for(int i = (File.n - 1);i >= 0;i--){
-		if(Matriz_Interpolacao.VetorX[i] == 0){//caso vetor na posicao atual seja 0
-			break;//pula para a proxima posicao
+		if(i != 0){
+			printf(" %lf*(X^%d) +",Matriz_Interpolacao.VetorX[i],((File.n - i)-1));
+			//mostra o elemento => (constante) *  x ^(expoente)
+		}else{
+			printf(" %lf*(X^%d)",Matriz_Interpolacao.VetorX[i],((File.n - i)-1));
 		}
-		printf(" %lf*(X^%d) +",Matriz_Interpolacao.VetorX[i],((File.n - i)-1));
-		//mostra o elemento => (constante) *  x ^(expoente)
 	}
-	printf("\b\b  \n\n");//Volta ponteiro de escrita 2 vezes e printa espacos em branco
+	printf("\n\n");//Volta ponteiro de escrita 2 vezes e printa espacos em branco
 	for(int i = 0;i<File.i;i++){//chama o horner para mostrar a imagem do valor passado
 		printf("P(%lf) = %lf\n",File.p[i],Horner(Matriz_Interpolacao.VetorX,File.n,File.p[i]));
 	}
